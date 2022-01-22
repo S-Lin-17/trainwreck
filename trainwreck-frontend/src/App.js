@@ -4,11 +4,7 @@ import './App.css';
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <p style="color:white">
-          Testing...
-        </p>
-      </header>
+      <h1> Testing...</h1>
     </div>
   );
 }
