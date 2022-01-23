@@ -2,7 +2,7 @@ package com.company;
 
 public class Train {
     private int ID; //train number
-    private final TrainType type; //trainType
+    private TrainType type; //trainType
     private int[] arrivalTime = new int[4]; // arrival at Station A
 
     private int[] availCapacity = new int[4]; // available capacity at Station A
@@ -66,14 +66,15 @@ public class Train {
     }
 
     // set capacity
+
     public void setCapacity(int numPAdded, String station)  {
         switch (station) {
             case "A":
-                this.availCapacity[0] -= numPAdded;
-            case "B":
                 this.availCapacity[1] -= numPAdded;
-            default:  // "C"
+            case "B":
                 this.availCapacity[2] -= numPAdded;
+            case "C":  // "C"
+                this.availCapacity[3] -= numPAdded;
         }
 
     }
@@ -84,8 +85,10 @@ public class Train {
                 return this.availCapacity[0];
             case "B":
                 return this.availCapacity[1];
-            default:  // "C"
+            case "C":  // "C"
                 return this.availCapacity[2];
+            default:
+                return this.availCapacity[3];
         }
 
     }
@@ -96,6 +99,15 @@ public class Train {
         int waitTime = trainArrivalTime - passArrivalTime;
         this.cumulWait += numPass * waitTime;
         return this.cumulWait;
+    }
+
+    ///////UPDATE////////
+    public int getCumulWait(){
+        return this.cumulWait;
+    }
+
+    public int getMaxCapacity () {
+        return this.maxCapacity;
     }
 
 }

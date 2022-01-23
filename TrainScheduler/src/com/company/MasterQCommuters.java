@@ -1,8 +1,8 @@
 package com.company;
 
-public class MasterQCommuters {
+public class MasterQCommuters implements Comparable<MasterQCommuters>{
     //this class stores the commuter info for the greedy algorithm queue
-    private final int time;
+    private int time;
     private int numCommuters;
     private final String s;
     private final int imaginaryTime;
@@ -40,5 +40,16 @@ public class MasterQCommuters {
         this.numCommuters = c;
     }
 
+    /////////////UPDATE/////////
+    @Override
+    public int compareTo (MasterQCommuters mqc) {
+        if (this.imaginaryTime == mqc.imaginaryTime){
+            return 0;
+        } else if (this.imaginaryTime < mqc.imaginaryTime) {
+            return -1;
+        } else {
+            return 1;
+        }
+    }
 
 }

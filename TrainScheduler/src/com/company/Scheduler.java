@@ -1,9 +1,6 @@
 package com.company;
 import java.io.*;
-import java.util.Scanner;
-import java.util.Queue;
-import java.util.LinkedList;
-import java.util.ArrayList;
+import java.util.*;
 
 public class Scheduler {
     private int avgWaitTime;
@@ -34,6 +31,7 @@ public class Scheduler {
     }
 
 
+
     public static void main (String[] args) throws FileNotFoundException {
 
         // Greedy algorithm: generate initial schedule
@@ -61,6 +59,8 @@ public class Scheduler {
         //////////////////////////////////////
         // sort Arraylist by imaginary time //
         //////////////////////////////////////
+        Collections.sort(queue);
+
 
         // Greedy algorithm
         // what are all of the constraints?? min 3 minutes between two trains leaving
@@ -119,12 +119,16 @@ public class Scheduler {
                                 /////////////////////////////
                                 // update cumulative weight//
                                 /////////////////////////////
+                                train.calcWaitTime(mqc.getNumCommuters(), mqc.getTime(), train.getArrivalTime(station));
+
                                 queue.remove(i);  // remove empty mqc from queue
                             } else {  // people get left on platform :'(
                                 train.setCapacity(train.getCapacity(station), station);  // fit to max capacity of train
                                 /////////////////////////////
                                 // update cumulative weight//
                                 /////////////////////////////
+                                train.calcWaitTime(mqc.getNumCommuters() - train.getCapacity(station), mqc.getTime(), train.getArrivalTime(station));
+
                                 mqc.updateNumCommuters(mqc.getNumCommuters() - train.getCapacity(station));// modify mqc from queue
                             }
 
@@ -137,8 +141,26 @@ public class Scheduler {
             }
             schedule.add(train);
 
-
         }
+
+        System.out.println(schedule.toString());
+
+        //////////UPDATE/////////
+        //calculate avg wait time
+        //store as float?
+        double avg = 0.;
+        double numPass = 0.;
+        for (Train t: schedule){
+            numPass += t.getMaxCapacity() - t.getCapacity("U");
+            avg += t.getCumulWait();
+        }
+        avg /= numPass;
+        System.out.println("The average wait time is : " + avg + "min");
+
+        //turn results into csv file
+//        FileWriter f = new
+
+
     }
 
 }

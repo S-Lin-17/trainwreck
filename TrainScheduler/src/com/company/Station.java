@@ -3,7 +3,7 @@ package com.company;
 import java.util.ArrayList;
 
 public class Station {
-    private final StationName name;
+    private StationName name;
     private int numberCommutersCumul; //cumulative number of commuters at station
     private ArrayList<SnapShot> snapShot; //stores the amount of people at the station, at a given time (t = 0 is 7am)
 
