@@ -12,7 +12,7 @@ public class Train {
     private int departTime;
      */
 
-    private int maxCapacity;
+    private final int maxCapacity;
     private int cumulWait; //sum of all the wait time of ppl on the train
 
 
@@ -92,6 +92,19 @@ public class Train {
         }
 
     }
+    public int getAvailableCap(String station, int numOnboard) {
+        switch (station) {
+            case "A":
+                return this.availCapacity[0] - numOnboard;
+            case "B":
+                return this.availCapacity[1] - numOnboard;
+            case "C":  // "C"
+                return this.availCapacity[2] - numOnboard;
+            default:
+                return this.availCapacity[3] - numOnboard;
+        }
+    }
+
 
     public void setNumBoarding(int numBoard, String station) {
         switch (station) {
