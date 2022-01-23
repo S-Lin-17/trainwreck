@@ -3,8 +3,9 @@ import './App.css';
 
 function App() {
   return (
-    <div className="App">
-      <h1> Testing...</h1>
+    <div class="center">
+      <h1 class="trainwreck_headline">The Trainwrecks</h1>
+      <h1 class="take_text">A take on the RailVision McHacks Challenge 2022</h1>
     </div>
   );
 }
