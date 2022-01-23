@@ -4,8 +4,8 @@ public class Train {
     private int ID; //train number
     private TrainType type; //trainType
     private int[] arrivalTime = new int[4]; // arrival at Station A
-
     private int[] availCapacity = new int[4]; // available capacity at Station A
+    private int[] numBoarding = new int[4];
 
     /*
     private Station currentStation;
@@ -93,12 +93,31 @@ public class Train {
 
     }
 
+    public void setNumBoarding(int numBoard, String station) {
+        switch (station) {
+            case "A":
+                this.numBoarding[0] += numBoard;
+                break;
+            case "B":
+                this.numBoarding[1] += numBoard;
+                break;
+            case "C":  // "C"
+                this.numBoarding[2] += numBoard;
+                break;
+        }
+    }
+
     //call this method when the passenger gets on the train
     public int calcWaitTime(int numPass, int passArrivalTime, int trainArrivalTime ){
         //time is the getOnTime
         int waitTime = trainArrivalTime - passArrivalTime;
         this.cumulWait += numPass * waitTime;
         return this.cumulWait;
+    }
+
+    public String toString (){
+        numBoarding[3] = numBoarding[0] + numBoarding [1] + numBoarding[2];
+        return this.type + "," + this.arrivalTime[0]+","+availCapacity[0]+","+ numBoarding[0]+","  + this.arrivalTime[1]+","+availCapacity[1]+","+ numBoarding[1]+","+this.arrivalTime[2]+","+availCapacity[2]+","+ numBoarding[2]+","+this.arrivalTime[3]+","+availCapacity[3]+","+ numBoarding[3];
     }
 
     ///////UPDATE////////

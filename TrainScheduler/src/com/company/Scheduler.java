@@ -32,7 +32,7 @@ public class Scheduler {
 
 
 
-    public static void main (String[] args) throws FileNotFoundException {
+    public static void main (String[] args) throws IOException {
 
         // Greedy algorithm: generate initial schedule
         ArrayList<Train> schedule = new ArrayList<>();
@@ -75,37 +75,42 @@ public class Scheduler {
         }
 
         // make schedule
-        while (!queue.isEmpty()) {
+        int currTime = 0;
+        int prevTrainTime = 0;
+        while (!trainsQ.isEmpty()) {
             // send out trains: L8 first, then L4
-            int currTime = 0;
             int numWaiting = 0;
-            int prevTrainTime = 0;
             // wait until L8 train can be filled
             int index = 0;
-            while (numWaiting < 400) {
+
+            Train train = trainsQ.remove();
+            while (numWaiting < train.getMaxCapacity()) {
+                /*if (index == queue.size()) {  // edge case where num people waiting never exceeds train max capacity (e.g. last train)?
+                    break;
+                }*/
                 // look at next element in queue
                 MasterQCommuters comm = queue.get(index);
                 currTime = comm.getImaginaryTime();
                 numWaiting += comm.getNumCommuters();
                 index++;
             }
-            // there are enough people waiting, make train leave station A at currTime
-            Train train = trainsQ.remove();
 
             // check if current train leaving time is after 7:03am
             if (currTime < 3) {
                 currTime = 3;
             }
             // check if current time is 3 mins after last train
-            if (currTime > prevTrainTime + 3) {
+            if (currTime < prevTrainTime + 3) {
                 currTime = prevTrainTime + 3;
             }
             // set arrival time = currTime (departure from A) - 3
             train.setArrivalTime(currTime - 3);
+            //System.out.println(numWaiting);
 
             // add people to train in order of stations A -> B -> C
             for (String station : stationOrder) {
                 int i = 0;
+                int addedSoFar = 0;
                 while (i < queue.size()) {
                     MasterQCommuters mqc = queue.get(i);
                     if (mqc.getImaginaryTime() > currTime) {  // only check commuters who can catch train
@@ -114,22 +119,26 @@ public class Scheduler {
                         // if train still has capacity
                         if (train.getCapacity(station) > 0) {
                             // add max num of people to train
+                            //////////// WHERE TF DO WE NEED TO DO -addedSoFar ???? ///////////////
+                            System.out.println(train.getCapacity(station) - addedSoFar);
                             if (train.getCapacity(station) >= mqc.getNumCommuters()) {  // all commuters can fit in train
                                 train.setCapacity(mqc.getNumCommuters(), station);
-                                /////////////////////////////
-                                // update cumulative weight//
-                                /////////////////////////////
-                                train.calcWaitTime(mqc.getNumCommuters(), mqc.getTime(), train.getArrivalTime(station));
+                                addedSoFar += mqc.getNumCommuters();
+                                train.setNumBoarding(mqc.getNumCommuters(), station);
+                                System.out.println(train);
+                                train.calcWaitTime(mqc.getNumCommuters(), mqc.getTime(), train.getArrivalTime(station));  // update cumulative weight
 
                                 queue.remove(i);  // remove empty mqc from queue
-                            } else {  // people get left on platform :'(
+                                i--;
+                            }
+                            else {  // people get left on platform :'(
                                 train.setCapacity(train.getCapacity(station), station);  // fit to max capacity of train
-                                /////////////////////////////
-                                // update cumulative weight//
-                                /////////////////////////////
-                                train.calcWaitTime(mqc.getNumCommuters() - train.getCapacity(station), mqc.getTime(), train.getArrivalTime(station));
+                                train.setNumBoarding(train.getCapacity(station), station);
+                                addedSoFar += train.getCapacity(station);
+                                System.out.println(train);
+                                train.calcWaitTime(train.getCapacity(station), mqc.getTime(), train.getArrivalTime(station));  // update cumulative weight
 
-                                mqc.updateNumCommuters(mqc.getNumCommuters() - train.getCapacity(station));// modify mqc from queue
+                                mqc.updateNumCommuters(mqc.getNumCommuters() - train.getCapacity(station));// modify mqc from queue: num commuters waiting - num people who get on
                             }
 
                         }
@@ -140,14 +149,12 @@ public class Scheduler {
 
             }
             schedule.add(train);
+            prevTrainTime = currTime;
 
         }
 
-        System.out.println(schedule.toString());
-
         //////////UPDATE/////////
         //calculate avg wait time
-        //store as float?
         double avg = 0.;
         double numPass = 0.;
         for (Train t: schedule){
@@ -155,11 +162,16 @@ public class Scheduler {
             avg += t.getCumulWait();
         }
         avg /= numPass;
-        System.out.println("The average wait time is : " + avg + "min");
 
-        //turn results into csv file
-//        FileWriter f = new
+        FileWriter csvWriter = new FileWriter("/Users/xueerding/Desktop/mchacks/trainwreck/outuwu.csv");
+        csvWriter.append("TrainNum,TrainType,A_ArrivalTime,A_AvailCap,A_Boarding,B_ArrivalTime,B_AvailCap,B_Boarding,C_ArrivalTime,C_AvailCap,C_Boarding,U_Arrival,U_AvailCap,U_Offloading\n");
+        for (int i=1; i<=16; i++) {
+            String line = i + "," + schedule.get(i-1).toString() + "\n";
+            csvWriter.append(line);
+        }
 
+        csvWriter.flush();
+        csvWriter.close();
 
     }
 
